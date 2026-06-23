@@ -1,0 +1,6 @@
+# Core ranker: ZERO third-party dependencies — Python 3.9+ standard library only.
+# This is intentional: it guarantees the ranking step reproduces inside the offline,
+# CPU-only evaluation sandbox with no install step and no network.
+
+# Optional — only needed to run the hosted demo (app.py) for the sandbox link:
+streamlit>=1.30

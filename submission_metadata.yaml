@@ -1,0 +1,66 @@
+# Redrob Hackathon — Submission Metadata
+# Fill the <FILL ...> fields before submitting. Team ID == team name (per the portal).
+
+team_name: "<FILL: your team name / team ID>"
+
+primary_contact:
+  name: "<FILL: your full name>"
+  email: "jeevankishore.9490@gmail.com"
+  phone: "<FILL: +91-XXXXXXXXXX>"
+
+team_members:
+  - name: "<FILL: your full name>"
+    email: "jeevankishore.9490@gmail.com"
+    role: "ML Engineer"
+
+# ---- Code and reproducibility ----
+github_repo: "<FILL: https://github.com/YOUR_USERNAME/redrob-ranker>"   # must be PUBLIC
+sandbox_link: "<FILL: https://huggingface.co/spaces/YOUR_USERNAME/redrob-ranker>"  # deploy app.py
+reproduce_command: "python rank.py --candidates ./candidates.jsonl --out ./submission.csv"
+
+# ---- Compute environment ----
+compute:
+  platform: "Linux x86_64 (8-core CPU)"
+  cpu_cores: 8
+  ram_gb: 16
+  python_version: "3.10"
+  os: "Ubuntu 22.04 LTS"
+  uses_gpu_for_inference: false      # CPU only
+  has_network_during_ranking: false  # no API calls during ranking
+  pre_computation_required: false    # no offline pre-compute; single end-to-end pass (~40s for 100k)
+  pre_computation_time_minutes: 0
+
+# ---- AI tools declaration (honest; declared use is not penalized) ----
+ai_tools_used:
+  - "Claude"
+ai_usage_summary: |
+  Claude was used as a development assistant for architecture design and code
+  implementation. The ranking system itself makes NO LLM calls and NO network
+  calls at rank time — all scoring is deterministic (rule-based recruiter logic +
+  pure-Python TF-IDF). The pipeline is fully reproducible offline on CPU.
+
+# ---- Approach summary (<=200 words) ----
+methodology_summary: |
+  Two-stage funnel that mirrors a production recruiting system. Stage 1 (recall)
+  streams all 100k candidates and keeps a 6k shortlist via a cheap title+keyword
+  relevance score, in one O(n) low-memory pass. Stage 2 (rerank) applies explicit
+  recruiter logic: a content "base" = role/career fit (0.34) + trust-weighted skill
+  coverage (0.24) + experience fit (0.22) + TF-IDF JD similarity (0.12) + education
+  (0.08); multiplied by disqualifier penalties (services-only career, CV/speech
+  tilt, research-only, job-hopping), a location factor (India-preferred, no visa
+  sponsorship), and a behavioral-signal modifier (availability, responsiveness,
+  recency). Role/career fit is the decisive defense against keyword-stuffer traps —
+  a "Marketing Manager" with every AI keyword still scores ~0 — while career-history
+  evidence rescues plain-language candidates who built recommender/search systems at
+  product companies without the buzzwords. An internal-consistency honeypot detector
+  hard-drops "subtly impossible" profiles (skill tenure exceeding career length,
+  impossible dates), keeping honeypots out of the top-100. Reasoning is assembled
+  from real profile facts only. Runtime ~40s for 100k on CPU; zero third-party deps.
+
+# ---- Declarations ----
+declarations:
+  read_submission_spec: true
+  code_is_original_work: true
+  no_collusion: true
+  honeypot_check_done: true
+  reproduction_tested: true
